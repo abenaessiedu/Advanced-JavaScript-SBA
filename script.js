@@ -8,7 +8,12 @@ const BASE_URL = 'https://api.watchmode.com/api/v1/';
 API through a search feature, paginated gallery, or similar. 
 This feature should use GET requests to retrieve associated data.*/
 
-
+const searchInput = document.getElementById("search-input"); 
+const searchButton = document.getElementById("search-button"); 
+const movieGallery = document.getElementById("movie-gallery"); 
+const pagination = document.getElementById("pagination"); 
+const watchList = document.getElementById("watchlist"); 
+ 
 /*3. Enable user manipulation of data within the API through 
 the use of POST, PUT, or PATCH requests. Ensure your chosen API 
 supports this feature before beginning.*/
