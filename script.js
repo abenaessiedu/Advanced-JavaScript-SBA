@@ -33,9 +33,22 @@ function addToWatchList(id, title, poster){
     }
 function removeFromWatchList(id){
     watchListItems = watchListItems.filter(item => item.id !== id); 
-    
+    localStorage.setItem('watchlist', JSON.stringify(watchListItems)); 
+    renderWatchList(); 
+    return {success: true, message: "🚨You have removed this movie from your watchlist!"}; 
 }
-
+function renderWatchList() {
+    watchList.innerHTML = '' 
+    if (watchListItems.length === 0) {
+        watchList.innerHTML = '<p> 🎬Your Watchlist is Empty! Add Your Favorite Movies!🍿<p>' ;
+        return; 
+    }
+    watchListItems.forEach(item => {
+        const watchListItem = document.createElement('div'); 
+        watchListItem.className = 'watchlist-item'; 
+        
+    })
+}
 
 /*4. Make use of Promises and async/await syntax as appropriate.*/
 
