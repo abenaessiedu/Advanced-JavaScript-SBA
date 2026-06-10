@@ -17,7 +17,24 @@ const watchList = document.getElementById("watchlist");
 /*3. Enable user manipulation of data within the API through 
 the use of POST, PUT, or PATCH requests. Ensure your chosen API 
 supports this feature before beginning.*/
+let watchListItems = JSON.parse(localStorage.getItem('watchlist')) || []; 
 
+function addToWatchList(id, title, poster){
+    if(!watchListItems.some(item => item.id === id)){
+        watchListItems.push({id, title, poster}); 
+        localStorage.setItem('watchlist', JSON.stringify(watchListItems)); 
+        renderWatchList(); 
+        showSustainabilityTip(title); 
+        return {success: true, message: "💥 Your movie has been added to your watchlist! 🍿"}; 
+    } else {
+        alert('🚨This movie has already been added to your watchlist! 🛑'); 
+        return {success: false, message: '🚨This movie has already been added to your watchlist! 🛑'}; 
+    }
+    }
+function removeFromWatchList(id){
+    watchListItems = watchListItems.filter(item => item.id !== id); 
+    
+}
 
 
 /*4. Make use of Promises and async/await syntax as appropriate.*/
