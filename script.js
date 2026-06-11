@@ -30,7 +30,51 @@ searchButton.addEventListener('click', async function() {
             movieGallery.innerHTML = '<p> Error fetching results. Please try again! </p>'; 
         }; 
 }); 
-
+function renderMovies(movies){
+    movieGallery.innerHTML = ' '; 
+    if(!movies || movies.length ===0) {
+        movieGallery.innerHTML = '<p> UH OH! NO RESULTS FOUND. </p>'; 
+        return; 
+    }
+movieGallery.forEach(movie => {
+    const movieElement = document.createElement('div'); 
+    movieElement.className = 'movie'; 
+    movieElement.innerHTML = `
+    <img src="${movie.poster || 'https://via.placeholder.com/200x300?text=No+Poster'}" alt="${movie.title}>
+    <div class="movie-info">
+    <h3>${movie.title}</h3> 
+    <p><strong> Year: </strong> ${movie.year || 'N/A/'} </p>
+    <p><strong> Type: </strong> ${movie.type || 'N/A/'} </p>
+    <button class="add-to-watchlist"
+    data-id="${movie.id}"
+    data-title="${movie.title}"
+    data-poster="${movie.poster || ' '}"> 
+    Add to Watchlist 
+    </button> 
+    </div> 
+    `; 
+    movieGallery.appendChild(movieElement); 
+}); 
+}
+ function renderWatchList(){
+    watchList.innerHTML = ' '; 
+    if(watchListItems.length === 0) {
+        watchList.innerHTML ='<p> 🚨Your watchlist is empty! Add some of Your Favorite Movies!<p>'; 
+        return; 
+    }
+    watchListItems.forEach(item => {
+        const watchlistItem = document.createElement('div'); 
+        watchlistItem.className = 'watchlist-item'; 
+        watchlistItem.innerHTML = `
+        <img src="${item.poster}" alt="${item.title}">
+        <div class ="watchlist-item-info"> 
+        <h4> ${item.title} </h4> 
+        </div> 
+        <button class="remove-btn" data-id="${item.id}"> REMOVE </button> 
+        `;
+        watchList.appendChild(watchlistItem); 
+    }); 
+ }
 /*3. Enable user manipulation of data within the API through 
 the use of POST, PUT, or PATCH requests. Ensure your chosen API 
 supports this feature before beginning.*/
@@ -48,12 +92,7 @@ function addToWatchList(id, title, poster) {
         return { success: false, message: '🚨This movie has already been added to your watchlist! 🛑' };
     }
 }
-function removeFromWatchList(id) {
-    watchListItems = watchListItems.filter(item => item.id !== id);
-    localStorage.setItem('watchlist', JSON.stringify(watchListItems));
-    renderWatchList();
-    return { success: true, message: "🚨You have removed this movie from your watchlist!" };
-}
+
 function renderWatchList() {
     watchList.innerHTML = ''
     if (watchListItems.length === 0) {
@@ -72,6 +111,12 @@ function renderWatchList() {
         `;
         watchList.appendChild(watchListItem);
     }); 
+}
+function removeFromWatchList(id) {
+    watchListItems = watchListItems.filter(item => item.id !== id);
+    localStorage.setItem('watchlist', JSON.stringify(watchListItems));
+    renderWatchList();
+    return { success: true, message: "🚨You have removed this movie from your watchlist!" };
 }
 document.addEventListener('click', function(e) {
     if(e.target.classList.contains('add-to-watchlist')) {
