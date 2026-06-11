@@ -15,5 +15,5 @@ Each media item shows: Title, Year of release, Type (TV show or movie), Poster i
 * Watchlist Feature
 Users can add media to a watchlist. The watchlist persists in the browser using localStorage. Users can remove items from the watchlist.
 
-*A PI Integration
+*API Integration
 Fetches data from Watchmode API. 
