@@ -2,7 +2,7 @@
 with an external web API. Use the data provided by 
 this API to populate your application’s content and features. */
 const API_KEY = "wm_nfpIk0JhI6Vn96xunnGo_hrp5lg-NJ0yM7FJQdWRvzY";
-const BASE_URL = 'https://api.watchmode.com/api/v1/';
+const BASE_URL = 'https://api.watchmode.com/v1/';
 
 /*2. Create user interaction with the 
 API through a search feature, paginated gallery, or similar. 
@@ -14,21 +14,43 @@ const movieGallery = document.getElementById("movie-gallery");
 const pagination = document.getElementById("pagination");
 const watchList = document.getElementById("watchlist"); 
 
+let currentPage = 1; 
+let totalPages = 1; 
+let watchListItems = JSON.parse(localStorage.getItem('watchlist')) || []; 
+
 searchButton.addEventListener('click', async function() {
     const query = searchInput.value.trim(); 
     if(!query) return; 
+
+
     try{
         const response = await fetch(
-            `${BASE_URL}search/?api_keys=${API_KEY}&search_field=title&search_term=${encodeURIComponent(query)}&page=${currentPage}`
+            `${BASE_URL}search/?api_key=${API_KEY}&search_field=title&search_value=${encodeURIComponent(query)}&page=${currentPage}`
         );
-        const data = await response.json(); 
-            renderMovies(data.results); 
-            totalPages = data.total_pages || 1; 
-            renderPagination(); 
-        } catch(error){
-            constole.error('Error fetching data:', error); 
-            movieGallery.innerHTML = '<p> Error fetching results. Please try again! </p>'; 
-        }; 
+
+
+        if (!response.ok) {
+            throw new Error (`API request failed with status ${response.status}`);
+        }
+
+
+        const data = await response.json();
+        console.log(data); 
+
+
+        renderMovies(data.title_results); 
+        totalPages = data.total_pages || 1; 
+        renderPagination(); 
+    } catch {
+        movieGallery.innerHTML = `<p> No results found! Try another search!</p>`; 
+    } try {
+        
+    } catch (error) {
+        
+    } (error) => {
+        console.log('Error fetching data!'); 
+        movieGallery.innerHTML = '<p> Error fetching results! Please try again! </p>'; 
+    }
 }); 
 function renderMovies(movies){
     movieGallery.innerHTML = ' '; 
@@ -36,11 +58,11 @@ function renderMovies(movies){
         movieGallery.innerHTML = '<p> UH OH! NO RESULTS FOUND. </p>'; 
         return; 
     }
-movieGallery.forEach(movie => {
+movies.forEach(movie => {
     const movieElement = document.createElement('div'); 
     movieElement.className = 'movie'; 
     movieElement.innerHTML = `
-    <img src="${movie.poster || 'https://via.placeholder.com/200x300?text=No+Poster'}" alt="${movie.title}>
+    <img src="${movie.poster || 'https://via.placeholder.com/200x300?text=No+Poster'}" alt="${movie.title}">
     <div class="movie-info">
     <h3>${movie.title}</h3> 
     <p><strong> Year: </strong> ${movie.year || 'N/A/'} </p>
@@ -58,32 +80,31 @@ movieGallery.forEach(movie => {
 }
  function renderWatchList(){
     watchList.innerHTML = ' '; 
-    if(watchListItems.length === 0) {
+    if(watchListItem.length === 0) {
         watchList.innerHTML ='<p> 🚨Your watchlist is empty! Add some of Your Favorite Movies!<p>'; 
         return; 
     }
-    watchListItems.forEach(item => {
-        const watchlistItem = document.createElement('div'); 
-        watchlistItem.className = 'watchlist-item'; 
-        watchlistItem.innerHTML = `
+    watchList.forEach(item => {
+        const watchListItem = document.createElement('div'); 
+        watchListItem.className = 'watchlist-item'; 
+        watchListItem.innerHTML = `
         <img src="${item.poster}" alt="${item.title}">
         <div class ="watchlist-item-info"> 
         <h4> ${item.title} </h4> 
         </div> 
         <button class="remove-btn" data-id="${item.id}"> REMOVE </button> 
         `;
-        watchList.appendChild(watchlistItem); 
+        watchList.appendChild(watchListItem); 
     }); 
  }
 /*3. Enable user manipulation of data within the API through 
 the use of POST, PUT, or PATCH requests. Ensure your chosen API 
 supports this feature before beginning.*/
-let watchListItems = JSON.parse(localStorage.getItem('watchlist')) || [];
 
 function addToWatchList(id, title, poster) {
-    if (!watchListItems.some(item => item.id === id)) {
-        watchListItems.push({ id, title, poster });
-        localStorage.setItem('watchlist', JSON.stringify(watchListItems));
+    if (!watchList.some(item => item.id === id)) {
+        watchList.push({ id, title, poster });
+        localStorage.setItem('watchlist', JSON.stringify(watchList));
         renderWatchList();
         showSustainabilityTip(title);
         return { success: true, message: "💥 Your movie has been added to your watchlist! 🍿" };
@@ -93,28 +114,10 @@ function addToWatchList(id, title, poster) {
     }
 }
 
-function renderWatchList() {
-    watchList.innerHTML = ''
-    if (watchListItems.length === 0) {
-        watchList.innerHTML = '<p> 🎬Your Watchlist is Empty! Add Your Favorite Movies!🍿<p>';
-        return;
-    }
-    watchListItems.forEach(item => {
-        const watchListItem = document.createElement('div');
-        watchListItem.className = 'watchlist-item';
-        watchListItem.innerHTML = `
-        <img src="${item.poster}" alt="${item.title}> 
-        <div class="watchlist-item-info"> 
-        <h4> ${item.title} </h4> 
-        </div> 
-        <button class="remove-btn" data-id="${item.id}">REMoVE</button> 
-        `;
-        watchList.appendChild(watchListItem);
-    }); 
-}
+
 function removeFromWatchList(id) {
-    watchListItems = watchListItems.filter(item => item.id !== id);
-    localStorage.setItem('watchlist', JSON.stringify(watchListItems));
+    watchList = watchList.filter(item => item.id !== id);
+    localStorage.setItem('watchlist', JSON.stringify(watchList));
     renderWatchList();
     return { success: true, message: "🚨You have removed this movie from your watchlist!" };
 }
